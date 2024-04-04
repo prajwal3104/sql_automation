@@ -5,7 +5,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
-def execute_sql_and_send_email(request):
+def execute_sql_and_send_email(request, BQ_PROJECT_ID):
     creds = None
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json')
@@ -14,7 +14,7 @@ def execute_sql_and_send_email(request):
             creds.refresh(Request())
         else:
             creds, _ = google.auth.default()
-            creds = creds.with_scopes(['https://www.googleapis.com/auth/gmail.modify'])
+            creds = creds.with_quota_project(BQ_PROJECT_ID)  # Using with_quota_project instead of with_scopes
 
     conn_str = 'DRIVER={SQL Server};SERVER=<your_server>;DATABASE=<your_database>;UID=<your_username>;PWD=<your_password>'
     conn = pyodbc.connect(conn_str)
